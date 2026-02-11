@@ -1,4 +1,3 @@
-# KnowledgeBridge
 
 🧱 1. Foundation
 

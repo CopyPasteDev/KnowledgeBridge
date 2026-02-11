@@ -4,7 +4,7 @@
 
 Internal RAG-based knowledge assistant for the team.
 
-The system provides answers to user questions based on the corporate knowledge base (Vitrek).
+The system provides answers to user questions based on the corporate knowledge base (YouTrack).
 Access is provided via Telegram bot.
 
 This is NOT an autonomous agent.
@@ -26,7 +26,7 @@ Components:
 
 Data Flow:
 
-Vitrek → Ingestion → Vector DB → RAG API → Telegram Bot → User
+YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 ---
 
@@ -57,7 +57,7 @@ Vitrek → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 Responsibilities:
 
-- Pull documents from Vitrek
+- Pull documents from YouTrack
 - Normalize content (strip HTML, etc.)
 - Chunk documents (500–800 tokens)
 - Generate embeddings
