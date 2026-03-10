@@ -9,7 +9,7 @@
 🗄 2. Vector Database
 
 -[ ] Поднять PostgreSQL + pgvector
--[ ] Создать таблицу knowledge_chunks
+-[ ] Создать таблицы source_documents и knowledge_chunks
 -[ ] Реализовать IVectorStore (upsert + similarity search)
 
 🔎 3. YouTrack Ingestion
@@ -19,7 +19,7 @@
 -[ ] Нормализация текста (summary + description + comments)
 -[ ] Chunking (500–800 токенов)
 -[ ] Генерация embeddings
--[ ] Upsert в vector DB
+-[ ] Upsert source_documents и knowledge_chunks в vector DB
 
 🧠 4. RAG API
 

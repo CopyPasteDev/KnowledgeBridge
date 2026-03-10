@@ -1,48 +1,48 @@
-# Project: TeamInsight (Working Title)
+# Проект: TeamInsight (рабочее название)
 
-## 1. Purpose
+## 1. Назначение
 
-Internal RAG-based knowledge assistant for the team.
+Внутренний RAG-ассистент для команды.
 
-The system provides answers to user questions based on the corporate knowledge base (YouTrack).
-Access is provided via Telegram bot.
+Система отвечает на вопросы пользователей на основе корпоративной базы знаний (YouTrack).
+Доступ предоставляется через Telegram-бота.
 
-This is NOT an autonomous agent.
-This is NOT a tool-calling system.
-This is NOT multi-tenant SaaS.
+Это НЕ автономный агент.
+Это НЕ система с вызовом инструментов.
+Это НЕ multi-tenant SaaS.
 
-It is a simple, reliable RAG service.
+Это простой и надёжный RAG-сервис.
 
 ---
 
-## 2. High-Level Architecture
+## 2. Архитектура верхнего уровня
 
-Components:
+Компоненты:
 
 1. Ingestion Service (console / worker)
-2. Vector Database (PostgreSQL + pgvector)
+2. Векторная база данных (PostgreSQL + pgvector)
 3. RAG API (.NET Web API)
-4. Telegram Bot (thin client)
+4. Telegram Bot (тонкий клиент)
 
-Data Flow:
+Поток данных:
 
 YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 ---
 
-## 3. Architectural Principles
+## 3. Архитектурные принципы
 
-- Keep components isolated.
-- No business logic inside Telegram bot.
-- No orchestration tools (n8n, Zapier, etc.).
-- No overengineering.
-- Clean, testable services.
-- All LLM interactions are inside RAG API only.
-- Ingestion is idempotent.
+- Компоненты должны быть изолированы друг от друга.
+- В Telegram-боте не должно быть бизнес-логики.
+- Никаких инструментов оркестрации (n8n, Zapier и т.д.).
+- Без оверинжиниринга.
+- Сервисы должны быть чистыми и тестируемыми.
+- Все взаимодействия с LLM находятся только внутри RAG API.
+- Ingestion должен быть идемпотентным.
 
 ---
 
-## 4. Non-Goals
+## 4. Что не входит в v1
 
 - No UI
 - No multi-tenancy
@@ -55,64 +55,84 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 ## 5. Ingestion Service
 
-Responsibilities:
+Задачи:
 
-- Pull documents from YouTrack
-- Normalize content (strip HTML, etc.)
-- Chunk documents (500–800 tokens)
-- Generate embeddings
-- Upsert into vector database
+- Забор документов из YouTrack
+- Нормализация контента (удаление HTML и т.д.)
+- Разбиение документов на чанки (500–800 токенов)
+- Генерация эмбеддингов
+- Upsert исходных документов и чанков в векторную базу
 
-Constraints:
+Ограничения:
 
-- Must be re-runnable safely
-- Must log processing errors
-- Must support partial re-indexing
+- Должен безопасно запускаться повторно
+- Должен логировать ошибки обработки
+- Должен поддерживать частичную переиндексацию
+- Должен сохранять связь между исходным документом и его чанками
 
 ---
 
-## 6. Vector Database Schema
+## 6. Схема векторной базы данных
 
-Table: knowledge_chunks
+Таблицы:
 
-Columns:
+### source_documents
+
+Содержит одну запись на каждую индексируемую исходную сущность.
+
+Поля:
 
 - id (uuid)
 - source (string)
 - source_id (string)
 - title (string)
+- content_checksum (string)
+- metadata (jsonb)
+- updated_at (timestamp)
+
+### knowledge_chunks
+
+Содержит текстовые чанки и связана с исходным документом.
+
+Поля:
+
+- id (uuid)
+- source_document_id (uuid)
 - chunk_text (text)
+- chunk_index (int)
 - embedding (vector)
 - metadata (jsonb)
 - updated_at (timestamp)
 
-Index:
+Индексы:
 
 - ivfflat or hnsw on embedding
+- btree on source/source_id in source_documents
+- btree on source_document_id in knowledge_chunks
 
 ---
 
 ## 7. RAG API
 
-Endpoint:
+Эндпоинт:
 
 POST /ask
 
-Request:
+Запрос:
 {
 "question": "string"
 }
 
-Flow:
+Поток:
 
-1. Generate embedding for question
-2. Retrieve top-K similar chunks
-3. Assemble context
-4. Build prompt
-5. Call LLM
-6. Return structured response
+1. Сгенерировать эмбеддинг вопроса
+2. Получить top-K похожих чанков
+3. Собрать контекст
+4. Построить prompt
+5. Вызвать LLM
+6. Вернуть структурированный ответ
 
-Response:
+Ответ:
 {
 "answer": "string",
 "sources": [
@@ -123,68 +143,68 @@ Response:
 ]
 }
 
-Constraints:
+Ограничения:
 
-- Limit context size
-- Limit token usage
-- Fail gracefully
-- Log latency
+- Ограничивать размер контекста
+- Ограничивать расход токенов
+- Корректно деградировать при ошибках
+- Логировать latency
 
 ---
 
-## 8. Prompt Design Rules
+## 8. Правила проектирования prompt
 
-- Answer ONLY based on provided context
-- If answer is not found, say so explicitly
-- Prefer concise answers
-- Cite sources in structured form
-- No hallucinations
+- Отвечать ТОЛЬКО на основе переданного контекста
+- Если ответ не найден, явно сообщать об этом
+- Предпочитать краткие ответы
+- Указывать источники в структурированном виде
+- Не галлюцинировать
 
 ---
 
 ## 9. Telegram Bot
 
-Responsibilities:
+Задачи:
 
-- Receive message
-- Call RAG API
-- Return answer
-- Enforce whitelist
+- Принимать сообщение
+- Вызывать RAG API
+- Возвращать ответ
+- Применять whitelist
 
-No business logic here.
+Бизнес-логики здесь быть не должно.
 
 ---
 
-## 10. Logging and Observability
+## 10. Логирование и наблюдаемость
 
-Minimum requirements:
+Минимальные требования:
 
-- Question text
+- Текст вопроса
 - Latency
-- Retrieved chunk count
-- LLM token usage (if available)
-- Errors
+- Количество извлечённых чанков
+- Расход токенов LLM (если доступен)
+- Ошибки
 
 ---
 
-## 11. Future Extensions (Not Now)
+## 11. Возможные расширения (не сейчас)
 
-- Access control
-- Multiple knowledge sources
-- Scheduled re-indexing
-- Web UI
-- Feedback loop
-- Caching layer
+- Контроль доступа
+- Несколько источников знаний
+- Плановая переиндексация
+- Веб-интерфейс
+- Контур обратной связи
+- Слой кэширования
 
-These are NOT part of v1.
+Это НЕ входит в v1.
 
 ---
 
-## 12. Quality Bar
+## 12. Критерии качества
 
-The system must:
+Система должна:
 
-- Return deterministic results for identical inputs
-- Avoid hallucination
-- Be easy to deploy with docker-compose
-- Be understandable by another backend engineer
+- Возвращать детерминированный результат для одинаковых входных данных
+- Избегать галлюцинаций
+- Легко разворачиваться через docker-compose
+- Быть понятной другому backend-инженеру
