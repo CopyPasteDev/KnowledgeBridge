@@ -7,19 +7,13 @@
 Система отвечает на вопросы пользователей на основе корпоративной базы знаний (YouTrack).
 Доступ предоставляется через Telegram-бота.
 
-Это НЕ автономный агент.
-Это НЕ система с вызовом инструментов.
-Это НЕ multi-tenant SaaS.
-
-Это простой и надёжный RAG-сервис.
-
 ---
 
 ## 2. Архитектура верхнего уровня
 
 Компоненты:
 
-1. Ingestion Service (console / worker)
+1. Ingestion Service  - сервис наполнения и обновления своей базы знаний 
 2. Векторная база данных (PostgreSQL + pgvector)
 3. RAG API (.NET Web API)
 4. Telegram Bot (тонкий клиент)
@@ -35,7 +29,6 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 - Компоненты должны быть изолированы друг от друга.
 - В Telegram-боте не должно быть бизнес-логики.
 - Никаких инструментов оркестрации (n8n, Zapier и т.д.).
-- Без оверинжиниринга.
 - Сервисы должны быть чистыми и тестируемыми.
 - Все взаимодействия с LLM находятся только внутри RAG API.
 - Ingestion должен быть идемпотентным.
@@ -44,12 +37,10 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 ## 4. Что не входит в v1
 
-- No UI
-- No multi-tenancy
-- No role-based access control (initial version)
-- No agent tool execution
-- No memory between conversations
-- No auto-learning from chats
+- Нет пользовательского интерфейса
+- Нет ролевой модели доступа (в первой версии)
+- Нет памяти между разговорами
+- Нет автоматического обучения на основе чатов
 
 ---
 
@@ -76,39 +67,37 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 Таблицы:
 
-### source_documents
+### `source_documents`
 
 Содержит одну запись на каждую индексируемую исходную сущность.
 
 Поля:
 
-- id (uuid)
-- source (string)
-- source_id (string)
-- title (string)
-- content_checksum (string)
-- metadata (jsonb)
-- updated_at (timestamp)
+- `id` (uuid)
+- `external_id` (string)
+- `title` (string)
+- `content_checksum` (string)
+- `metadata` (jsonb)
+- `updated_at` (timestamp)
 
-### knowledge_chunks
+### `knowledge_chunks`
 
 Содержит текстовые чанки и связана с исходным документом.
 
 Поля:
 
-- id (uuid)
-- source_document_id (uuid)
-- chunk_text (text)
-- chunk_index (int)
-- embedding (vector)
-- metadata (jsonb)
-- updated_at (timestamp)
+- `id` (uuid)
+- `source_document_id` (uuid)
+- `chunk_text` (text)
+- `chunk_index` (int)
+- `embedding` (vector)
+- `updated_at` (timestamp)
 
 Индексы:
 
-- ivfflat or hnsw on embedding
-- btree on source/source_id in source_documents
-- btree on source_document_id in knowledge_chunks
+- hnsw on `embedding`
+- btree on `external_id` in `source_documents`
+- btree on `source_document_id` in `knowledge_chunks`
 
 ---
 
@@ -116,12 +105,15 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 Эндпоинт:
 
-POST /ask
+`POST /ask`
 
 Запрос:
+
+```json
 {
-"question": "string"
+  "question": "string"
 }
+```
 
 Поток:
 
@@ -133,15 +125,18 @@ POST /ask
 6. Вернуть структурированный ответ
 
 Ответ:
+
+```json
 {
-"answer": "string",
-"sources": [
-{
-"title": "string",
-"source_id": "string"
+  "answer": "string",
+  "sources": [
+    {
+      "title": "string",
+      "external_id": "string"
+    }
+  ]
 }
-]
-}
+```
 
 Ограничения:
 

@@ -122,8 +122,8 @@
 
 Минимальное направление схемы:
 
-- `source_documents`: source system, внешний id, title, snapshot нормализованного контента или checksum, metadata, timestamps обновления
-- `knowledge_chunks`: ссылка на исходный документ, текст чанка, порядок чанка, embedding, metadata, timestamps обновления
+- `source_documents`: внешний id, title, snapshot нормализованного контента или checksum, metadata, timestamps обновления
+- `knowledge_chunks`: ссылка на исходный документ, текст чанка, порядок чанка, embedding, timestamps обновления
 
 Ограничение:
 
