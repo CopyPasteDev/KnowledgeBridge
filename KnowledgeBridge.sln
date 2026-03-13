@@ -9,7 +9,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8D65165A-3CF3-4E05-B157-34A5E831D684}"
 	ProjectSection(SolutionItems) = preProject
 		docs\architecture.md = docs\architecture.md
-		docs\decisions.md = docs\decisions.md
 		docs\roadmap.md = docs\roadmap.md
 	EndProjectSection
 EndProject
