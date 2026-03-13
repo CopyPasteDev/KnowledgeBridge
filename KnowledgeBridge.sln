@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8D65165A-3
 	ProjectSection(SolutionItems) = preProject
 		docs\architecture.md = docs\architecture.md
 		docs\decisions.md = docs\decisions.md
+		docs\roadmap.md = docs\roadmap.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeBridge.Domain", "src\KnowledgeBridge.Domain\KnowledgeBridge.Domain.csproj", "{B6598CDA-3CAF-44CD-94A9-2EBD457B7B94}"

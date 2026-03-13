@@ -1,10 +1,10 @@
 
 🧱 1. Foundation
 
--[ ] Создать .NET 10 solution
--[ ] Проекты: Api, Ingestion, TelegramBot, Infrastructure, Domain
--[ ] Настроить DI и логирование
--[ ] Добавить базовые интерфейсы
+-[x] Создать .NET 10 solution
+-[x] Проекты: Api, Ingestion, TelegramBot, Infrastructure, Domain
+-[x] Настроить DI и логирование
+-[x] Добавить базовые интерфейсы
 
 🗄 2. Vector Database
 
