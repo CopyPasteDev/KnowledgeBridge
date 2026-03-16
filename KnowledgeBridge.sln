@@ -6,12 +6,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{A11D3B5B-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{30165EA7-660E-4FCD-AE78-318C2C208E1E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8D65165A-3CF3-4E05-B157-34A5E831D684}"
-	ProjectSection(SolutionItems) = preProject
-		docs\architecture.md = docs\architecture.md
-		docs\roadmap.md = docs\roadmap.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeBridge.Domain", "src\KnowledgeBridge.Domain\KnowledgeBridge.Domain.csproj", "{B6598CDA-3CAF-44CD-94A9-2EBD457B7B94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeBridge.Application", "src\KnowledgeBridge.Application\KnowledgeBridge.Application.csproj", "{AB3FCB03-FF51-4F36-B4F3-C570781261DC}"
