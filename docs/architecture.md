@@ -80,6 +80,14 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 - `metadata` (jsonb)
 - `updated_at` (timestamp)
 
+Правила:
+
+- `id` — внутренний идентификатор документа и первичный ключ
+- все GUID генерирует приложение как `UUID v7`
+- `external_id` — внешний идентификатор документа и `UNIQUE` ключ
+- документ при `upsert` ищется по `external_id`
+- `content_checksum` считается по `title + нормализованный текст`
+
 ### `knowledge_chunks`
 
 Содержит текстовые чанки и связана с исходным документом.
@@ -98,6 +106,22 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 - hnsw on `embedding`
 - btree on `external_id` in `source_documents`
 - btree on `source_document_id` in `knowledge_chunks`
+- unique on (`source_document_id`, `chunk_index`) in `knowledge_chunks`
+
+Семантика `upsert`:
+
+- если документ не найден, создаётся новая запись и вставляется весь набор чанков
+- если checksum совпадает, обновляется только `updated_at`
+- если checksum изменился, документ обновляется, старые чанки удаляются, новый набор вставляется заново
+- `metadata` обновляется только вместе с изменением контента
+- `updated_at` хранит время записи в БД
+- время изменения данных в источнике хранится в `metadata`
+- `knowledge_chunks.id` генерируется заново при каждой переиндексации
+- операция выполняется в одной транзакции
+
+Связанное решение:
+
+- [ADR 002: Семантика upsert для source_documents и knowledge_chunks](adr/002-upsert-semantics-for-vector-store.md)
 
 ---
 
