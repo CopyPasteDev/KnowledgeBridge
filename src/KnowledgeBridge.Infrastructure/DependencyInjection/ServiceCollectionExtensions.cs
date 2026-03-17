@@ -1,6 +1,9 @@
 using KnowledgeBridge.Infrastructure.Configuration;
+using KnowledgeBridge.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace KnowledgeBridge.Infrastructure.DependencyInjection;
 
@@ -29,6 +32,17 @@ public static class ServiceCollectionExtensions
         services
             .AddOptions<YouTrackOptions>()
             .Bind(configuration.GetSection(YouTrackOptions.SectionName));
+
+        services.AddDbContext<KnowledgeBridgeDbContext>((serviceProvider, optionsBuilder) =>
+        {
+            var vectorStoreOptions = serviceProvider
+                .GetRequiredService<IOptions<PostgresVectorStoreOptions>>()
+                .Value;
+
+            optionsBuilder.UseNpgsql(
+                vectorStoreOptions.ConnectionString,
+                npgsqlOptionsBuilder => npgsqlOptionsBuilder.UseVector());
+        });
 
         return services;
     }
