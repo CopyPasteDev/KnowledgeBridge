@@ -2,24 +2,21 @@ namespace KnowledgeBridge.Domain.Documents;
 
 public sealed class KnowledgeChunk
 {
-    /// <summary>
-    /// Внутренний идентификатор чанка, который генерируется заново при каждой переиндексации.
-    /// </summary>
+    /// <summary>Внутренний идентификатор чанка.</summary>
     public Guid Id { get; init; }
 
+    /// <summary>Идентификатор родительского документа.</summary>
     public Guid SourceDocumentId { get; init; }
 
+    /// <summary>Текст чанка.</summary>
     public required string Text { get; init; }
 
-    /// <summary>
-    /// Порядок чанка внутри исходного документа. Должен быть уникальным в рамках документа.
-    /// </summary>
+    /// <summary>Порядковый номер чанка в документе.</summary>
     public int Index { get; init; }
 
+    /// <summary>Векторное представление чанка.</summary>
     public IReadOnlyList<float> Embedding { get; init; } = Array.Empty<float>();
 
-    /// <summary>
-    /// Время записи в БД.
-    /// </summary>
+    /// <summary>Время записи чанка в БД.</summary>
     public DateTimeOffset UpdatedAt { get; init; }
 }

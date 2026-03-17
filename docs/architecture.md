@@ -103,7 +103,7 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 
 Индексы:
 
-- hnsw on `embedding`
+- hnsw on `embedding` with `vector_cosine_ops`
 - btree on `external_id` in `source_documents`
 - btree on `source_document_id` in `knowledge_chunks`
 - unique on (`source_document_id`, `chunk_index`) in `knowledge_chunks`
@@ -122,6 +122,21 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 Связанное решение:
 
 - [ADR 002: Семантика upsert для source_documents и knowledge_chunks](adr/002-upsert-semantics-for-vector-store.md)
+
+Контракт векторного поиска:
+
+- поиск выполняется по `knowledge_chunks.embedding`
+- используется cosine distance
+- для поиска в SQL используется оператор `<=>`
+- результаты сортируются по расстоянию в порядке возрастания
+- `Score` в ответе — это cosine similarity, то есть `1 - cosine distance`
+- чем больше `Score`, тем результат релевантнее
+- значение `limit` по умолчанию для первой версии равно `5`
+- на первом этапе порог отсечения не используется
+
+Связанное решение:
+
+- [ADR 003: Контракт векторного поиска](adr/003-vector-search-contract.md)
 
 ---
 
@@ -142,7 +157,7 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 Поток:
 
 1. Сгенерировать эмбеддинг вопроса
-2. Получить top-K похожих чанков
+2. Получить наиболее близкие чанки
 3. Собрать контекст
 4. Построить prompt
 5. Вызвать LLM

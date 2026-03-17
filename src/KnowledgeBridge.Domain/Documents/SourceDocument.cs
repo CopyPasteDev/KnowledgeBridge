@@ -2,30 +2,21 @@ namespace KnowledgeBridge.Domain.Documents;
 
 public sealed class SourceDocument
 {
-    /// <summary>
-    /// Внутренний идентификатор, который приложение генерирует как UUID v7.
-    /// </summary>
+    /// <summary>Внутренний идентификатор документа.</summary>
     public Guid Id { get; init; }
 
-    /// <summary>
-    /// Внешний идентификатор источника, который используется как уникальный ключ документа.
-    /// </summary>
+    /// <summary>Внешний идентификатор документа в источнике.</summary>
     public required string ExternalId { get; init; }
 
+    /// <summary>Заголовок документа.</summary>
     public required string Title { get; init; }
 
-    /// <summary>
-    /// Checksum от заголовка и нормализованного текста документа.
-    /// </summary>
+    /// <summary>Контрольная сумма содержимого документа.</summary>
     public required string ContentChecksum { get; init; }
 
-    /// <summary>
-    /// Метаданные источника, включая время изменения данных на стороне источника.
-    /// </summary>
+    /// <summary>Метаданные документа из источника.</summary>
     public IReadOnlyDictionary<string, string> Metadata { get; init; } = new Dictionary<string, string>();
 
-    /// <summary>
-    /// Время записи в БД.
-    /// </summary>
+    /// <summary>Время записи документа в БД.</summary>
     public DateTimeOffset UpdatedAt { get; init; }
 }
