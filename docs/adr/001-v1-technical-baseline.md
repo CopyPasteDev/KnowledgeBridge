@@ -53,14 +53,14 @@
 - Негативные:
   локальные модели могут не подтвердить нужное качество или приемлемую задержку ответа;
   появляется дополнительная сложность в конфигурации провайдеров и хранении секретов;
-  решение пока не фиксирует детали доступа к PostgreSQL.
+  стек хранения в PostgreSQL требует отдельной инфраструктурной реализации и настройки.
 - Что нужно сделать дальше:
-  оформить отдельные ADR для доступа к PostgreSQL и `pgvector` на уровне кода;
   подготовить начальную инфраструктуру БД: docker-compose, миграции или SQL-скрипты.
 
 ## Связанные решения
 
 - [ADR 002: Семантика upsert для source_documents и knowledge_chunks](002-upsert-semantics-for-vector-store.md)
 - [ADR 003: Контракт векторного поиска](003-vector-search-contract.md)
+- [ADR 004: Доступ к PostgreSQL из кода через EF Core и Pgvector.EntityFrameworkCore](004-postgresql-code-access-via-ef-core.md)
 - [docs/architecture.md](../architecture.md)
 - [docs/roadmap.md](../roadmap.md)

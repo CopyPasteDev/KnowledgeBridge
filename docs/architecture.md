@@ -137,6 +137,14 @@ YouTrack → Ingestion → Vector DB → RAG API → Telegram Bot → User
 Связанное решение:
 
 - [ADR 003: Контракт векторного поиска](adr/003-vector-search-contract.md)
+- [ADR 004: Доступ к PostgreSQL из кода через EF Core и Pgvector.EntityFrameworkCore](adr/004-postgresql-code-access-via-ef-core.md)
+
+Доступ к данным из кода:
+
+- Слой инфраструктуры работает с PostgreSQL через `EF Core`.
+- Провайдер PostgreSQL: `Npgsql.EntityFrameworkCore.PostgreSQL`.
+- Интеграция типа `vector` и операций `pgvector` выполняется через `Pgvector.EntityFrameworkCore`.
+- Слой приложения работает только через `IVectorStore` и не зависит от `DbContext`.
 
 ---
 
