@@ -1,7 +1,7 @@
 
 🧱 1. Foundation
 
--[x] Создать .NET 10 solution
+- [x] Создать .NET 10 solution
 -[x] Проекты: Api, Ingestion, TelegramBot, Infrastructure, Domain
 -[x] Настроить DI и логирование
 -[x] Добавить базовые интерфейсы
